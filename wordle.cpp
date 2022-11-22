@@ -47,6 +47,11 @@ std::set<std::string> wordle(
     // check against dictionary
     std::set<std::string> dict2 = dict;
     std::set<std::string> validWords = setIntersection(guesses, dict2);
+
+    // cleanup
+    givenLetters.clear();
+    floatingLetters.clear();
+
     return validWords;
 }
 
@@ -76,6 +81,8 @@ void wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters
             floatingLettersCopy.erase(floatingLettersCopy.begin() + letterIndex);
             wordleHelper(guesses, givenLettersCopy, floatingLettersCopy, alphabet);
             letterIndex++;
+            givenLettersCopy.clear();
+            floatingLettersCopy.clear();
             // std::cout << guesses.size() << " guesses added" << std::endl;
         }
 
@@ -91,6 +98,8 @@ void wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters
                     givenLettersCopy[index] = letter;
                     //abcCopy.erase(letter);
                     wordleHelper(guesses, givenLettersCopy, floatingLetters, abcCopy);
+                    abcCopy.clear();
+                    givenLettersCopy.clear();
                 }
             }
         }
