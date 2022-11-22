@@ -10,7 +10,7 @@
 using namespace std;
 
 // Add prototypes of helper functions here
-std::set<std::string> wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters, std::set<char> &floatingLetters);
+void wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters, std::set<char> floatingLetters, std::set<char> alphabet);
 std::string convertToString(std::vector<char> v);
 std::set<std::string> setIntersection(std::set<std::string> &s1, std::set<std::string> &s2);
 
@@ -21,11 +21,15 @@ std::set<std::string> wordle(
     const std::set<std::string> &dict)
 {
 
+    // alphabet
+    std::set<char> alphabet = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+
     // convert floating letters into set
     std::set<char> floatingLetters;
     for (unsigned int i = 0; i < floating.length(); i++)
     {
         floatingLetters.insert(floating[i]);
+        alphabet.erase(floating[i]);
     }
 
     // convert floating letters into set
@@ -37,7 +41,7 @@ std::set<std::string> wordle(
 
     // get combinations
     std::set<std::string> guesses;
-    wordleHelper(guesses, givenLetters, floatingLetters);
+    wordleHelper(guesses, givenLetters, floatingLetters, alphabet);
 
     // check against dictionary
     std::set<std::string> dict2 = dict;
@@ -46,10 +50,9 @@ std::set<std::string> wordle(
 }
 
 // Define any helper functions here
-std::set<std::string> wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters, std::set<char> &floatingLetters)
+void wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters, std::set<char> floatingLetters, std::set<char> alphabet)
 {
 
-    // @summary
     int index = 0;
     for (std::vector<char>::iterator it = givenLetters.begin(); it != givenLetters.end(); ++it)
     {
@@ -66,19 +69,42 @@ std::set<std::string> wordleHelper(std::set<std::string> &guesses, std::vector<c
         {
             const char floatingLetter = *it2;
             std::vector<char> givenLettersCopy = givenLetters;
+            std::set<char> floatingLettersCopy = floatingLetters;
             givenLettersCopy[index] = floatingLetter;
-            wordleHelper(guesses, givenLettersCopy, floatingLetters);
+            floatingLettersCopy.erase(floatingLetter);
+            wordleHelper(guesses, givenLettersCopy, floatingLettersCopy, alphabet);
         }
 
+        // if no more floating numbers left, try other alphabet letters excluding floating nums
+        if (floatingLetters.size() == 0)
+        {
+            for (std::set<char>::iterator it2 = alphabet.begin(); it2 != alphabet.end(); ++it2)
+            {
+                const char letter = *it2;
+                std::vector<char> givenLettersCopy = givenLetters;
+                std::set<char> abcCopy = alphabet;
+                givenLettersCopy[index] =letter;
+                abcCopy.erase(letter);
+                wordleHelper(guesses, givenLettersCopy, floatingLetters, abcCopy);
+            }
+        }
         index++;
+    }
+
+    // check for incomplete words and prevent them from being added
+    for (std::vector<char>::iterator it = givenLetters.begin(); it != givenLetters.end(); ++it)
+    {
+        // skip non blank character
+        const char letter = *it;
+        if (letter == '-')
+            return;
     }
 
     // @condition If all letters
     std::string s = convertToString(givenLetters);
     //std::cout << s << std::endl;
     guesses.insert(s);
-
-    return guesses;
+    return;
 }
 
 std::string convertToString(std::vector<char> v)
