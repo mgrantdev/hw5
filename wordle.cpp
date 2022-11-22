@@ -119,7 +119,7 @@ void wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters
 
     // @condition If all letters
     std::string s = convertToString(givenLetters);
-    std::cout << s << std::endl;
+    //std::cout << s << std::endl;
     guesses.insert(s);
     return;
 }
