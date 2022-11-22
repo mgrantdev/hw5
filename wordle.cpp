@@ -79,7 +79,7 @@ void wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters
             // std::cout << guesses.size() << " guesses added" << std::endl;
         }
 
-        if (floatingLetters.size() == 0 && alphabet.size() == 26)
+        if (floatingLetters.size() == 0)
         {
             // if no more floating numbers left, try other alphabet letters excluding floating nums
             {
@@ -89,7 +89,7 @@ void wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters
                     std::vector<char> givenLettersCopy = givenLetters;
                     std::set<char> abcCopy = alphabet;
                     givenLettersCopy[index] = letter;
-                    abcCopy.erase(letter);
+                    //abcCopy.erase(letter);
                     wordleHelper(guesses, givenLettersCopy, floatingLetters, abcCopy);
                 }
             }
@@ -101,6 +101,7 @@ void wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters
     // check for incomplete words and prevent them from being added
     for (std::vector<char>::iterator it = givenLetters.begin(); it != givenLetters.end(); ++it)
     {
+
         // skip non blank character
         const char letter = *it;
         if (letter == '-')
