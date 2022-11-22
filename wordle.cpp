@@ -79,7 +79,7 @@ void wordleHelper(std::set<std::string> &guesses, std::vector<char> givenLetters
             // std::cout << guesses.size() << " guesses added" << std::endl;
         }
 
-        if (floatingLetters.size() == 0)
+        if (floatingLetters.size() == 0 && alphabet.size() == 26)
         {
             // if no more floating numbers left, try other alphabet letters excluding floating nums
             {
