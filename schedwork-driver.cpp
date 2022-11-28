@@ -25,11 +25,8 @@ int main()
     };
     DailySchedule sched;
     bool solutionFound = schedule(avail, 2, 2, sched);
-    if(solutionFound)
-    {
-        printSchedule(sched);
-    }
-    else
+    printSchedule(sched);
+    if(!solutionFound)
     {
         cout << "No solution found!" << endl;
     }
