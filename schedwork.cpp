@@ -102,10 +102,13 @@ bool scheduleHelper(
     // Otherwise, remove assigned number and continue
     std::cout << "Removing Worker " << wId << " from Day " << day << " schedule" << std::endl;
     sched[day][wId] = 0;
-    if (scheduleHelper(avail, dailyNeed, maxShifts, sched, wId + 1, totalWorkers, day))
+    if (isValid(avail, sched, dailyNeed, maxShifts, (unsigned long)day, wId, totalWorkers))
     {
-        std::cout << "Confirming Worker " << wId << " as absent for Day " << day << " schedule" << std::endl;
-        return true;
+        if (scheduleHelper(avail, dailyNeed, maxShifts, sched, wId + 1, totalWorkers, day))
+        {
+            std::cout << "Confirming Worker " << wId << " as absent for Day " << day << " schedule" << std::endl;
+            return true;
+        }
     }
 
     return false;
@@ -141,7 +144,7 @@ bool isValid(
         potentialShifts[workerId] = 0;
     }
 
-    //if(sched[currentDay][currentWorkerId]) shifts[currentWorkerId]++;
+    // if(sched[currentDay][currentWorkerId]) shifts[currentWorkerId]++;
 
     // @summary Make sure daily needs are met
     for (long unsigned int day = 0; day < avail.size(); day++)
@@ -152,7 +155,7 @@ bool isValid(
         int workersScheduledToday = 0;
         for (Worker_T workerId = 0; workerId < totalWorkers; workerId++)
         {
-            //if(workerId == currentWorkerId && day == currentDay) continue;
+            // if(workerId == currentWorkerId && day == currentDay) continue;
             std::cout << "Parsing Worker with ID: " << workerId << std::endl;
             if (avail[day][workerId] == 1)
             {
@@ -167,7 +170,7 @@ bool isValid(
                     std::cout << workerId << " scheduled on day " << day << std::endl;
                     workersScheduledToday++;
                     shifts[workerId]++;
-                }  
+                }
 
                 std::cout << "Scheduled Shifts: " << shifts[workerId] << std::endl;
                 std::cout << "Potential Shifts: " << potentialShifts[workerId] << std::endl;
@@ -179,7 +182,8 @@ bool isValid(
                     return false;
                 }
 
-                std::cout << "NEXT\n" << std::endl;
+                std::cout << "NEXT\n"
+                          << std::endl;
             }
             std::cout << "---" << std::endl;
         }
@@ -204,6 +208,8 @@ bool isValid(
             return false;
         }
     }
+
+    std::cout << "CURRENT DAY: " << currentDay << ", CURRENT WORKER ID: " << currentWorkerId << " IS VALID!" << std::endl;
 
     return true;
 }
