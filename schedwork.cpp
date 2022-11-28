@@ -94,14 +94,17 @@ bool scheduleHelper(
     {
         if (scheduleHelper(avail, dailyNeed, maxShifts, sched, wId + 1, totalWorkers, day))
         {
+            std::cout << "Confirming Worker " << wId << " for Day " << day << " schedule" << std::endl;
             return true;
         }
     }
 
     // Otherwise, remove assigned number and continue
+    std::cout << "Removing Worker " << wId << " from Day " << day << " schedule" << std::endl;
     sched[day][wId] = 0;
     if (scheduleHelper(avail, dailyNeed, maxShifts, sched, wId + 1, totalWorkers, day))
     {
+        std::cout << "Confirming Worker " << wId << " as absent for Day " << day << " schedule" << std::endl;
         return true;
     }
 
@@ -118,57 +121,86 @@ bool isValid(
     Worker_T currentWorkerId,
     long unsigned int totalWorkers)
 {
-    // std::cout << "Day: " << currentDay << std::endl;
-    // std::cout << "WorkerId: " << currentWorkerId << std::endl;
+    std::cout << "CURRENT DAY: " << currentDay << std::endl;
+    std::cout << "CURRENT WORKER ID: " << currentWorkerId << std::endl;
 
-    if (!avail[currentDay][currentWorkerId])
+    //  @cond Make sure worker is available if scheduled
+    if (!avail[currentDay][currentWorkerId] && sched[currentDay][currentWorkerId])
+    {
+        std::cout << "Worker not available" << std::endl;
+        std::cout << "---" << std::endl;
         return false;
+    }
 
     // @summary Initialize a schedule for each worker
     int shifts[totalWorkers];
+    int potentialShifts[totalWorkers];
     for (Worker_T workerId = 0; workerId < totalWorkers; workerId++)
     {
         shifts[workerId] = 0;
+        potentialShifts[workerId] = 0;
     }
-    shifts[currentWorkerId] = 1;
+
+    //if(sched[currentDay][currentWorkerId]) shifts[currentWorkerId]++;
 
     // @summary Make sure daily needs are met
     for (long unsigned int day = 0; day < avail.size(); day++)
     {
+
+        std::cout << "Parsing Day: " << day << std::endl;
         int workersAvailableToday = 0;
         int workersScheduledToday = 0;
         for (Worker_T workerId = 0; workerId < totalWorkers; workerId++)
         {
-            // if(workerId == currentWorkerId && day == currentDay) continue;
+            //if(workerId == currentWorkerId && day == currentDay) continue;
+            std::cout << "Parsing Worker with ID: " << workerId << std::endl;
             if (avail[day][workerId] == 1)
             {
-                if (shifts[workerId] < maxShifts && sched[day][workerId] == 0)
+                if (potentialShifts[workerId] + shifts[workerId] < maxShifts && sched[day][workerId] == 0)
                 {
+                    std::cout << workerId << " is available on day " << day << std::endl;
                     workersAvailableToday++;
-                    shifts[workerId]++;
+                    potentialShifts[workerId]++;
                 }
                 if (sched[day][workerId] == 1)
                 {
+                    std::cout << workerId << " scheduled on day " << day << std::endl;
                     workersScheduledToday++;
+                    shifts[workerId]++;
+                }  
+
+                std::cout << "Scheduled Shifts: " << shifts[workerId] << std::endl;
+                std::cout << "Potential Shifts: " << potentialShifts[workerId] << std::endl;
+
+                if (shifts[workerId] + potentialShifts[workerId] > maxShifts)
+                {
+                    std::cout << "Too many shifts" << std::endl;
+                    std::cout << "-------" << std::endl;
+                    return false;
                 }
+
+                std::cout << "NEXT\n" << std::endl;
             }
+            std::cout << "---" << std::endl;
         }
-        // std::cout << "Available: " << workersAvailableToday << std::endl;
-        // std::cout << "Scheduled: " << workersScheduledToday << std::endl;
+        std::cout << "Available: " << workersAvailableToday << std::endl;
+        std::cout << "Scheduled: " << workersScheduledToday << std::endl;
         if (dailyNeed > workersAvailableToday + workersScheduledToday)
         {
-            // std::cout << "Not enough workers" << std::endl;
+            std::cout << "Not enough workers" << std::endl;
+            std::cout << "-------" << std::endl;
             return false;
         }
     }
-    // std::cout << "---" << std::endl;
+    std::cout << "-------" << std::endl;
 
     // @summary Check to make sure to max shifts constraint is satisfied
     for (Worker_T workerId = 0; workerId < totalWorkers; workerId++)
     {
-        if (shifts[workerId] > maxShifts)
+        std::cout << "Scheduled shifts for worker " << workerId << ": " << (shifts[workerId] + potentialShifts[workerId]) << std::endl;
+        if (shifts[workerId] + potentialShifts[workerId] > maxShifts)
         {
-            // std::cout << "Too many shifts" << std::endl;
+            std::cout << "Too many shifts" << std::endl;
             return false;
         }
     }
