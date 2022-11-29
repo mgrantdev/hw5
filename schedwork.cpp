@@ -55,19 +55,20 @@ bool schedule(
     int cursor = 0;
     for (AvailabilityMatrix::iterator it = aMatrix.begin(); it != aMatrix.end(); ++it)
     {
-        sched[cursor].resize(avail[0].size());
+        
+        sched[cursor].resize(avail[0].size(), INVALID_ID);
         cursor++;
     }
 
     // Add your code below
-    return scheduleHelper(aMatrix, dailyNeed, maxShifts, sched, 0, (unsigned int)avail[0].size(), 0);
+    return scheduleHelper(aMatrix, dailyNeed, maxShifts, sched,  0, (unsigned int)avail[0].size(), 0);
 }
 
 bool scheduleHelper(
     AvailabilityMatrix &avail,
     size_t dailyNeed,
     size_t maxShifts,
-    DailySchedule &sched,
+    DailySchedule &sched,  
     Worker_T wId,
     unsigned int totalWorkers,
     int day)
@@ -117,7 +118,7 @@ bool scheduleHelper(
 // @summary Check if this shift is valid
 bool isValid(
     AvailabilityMatrix &avail,
-    DailySchedule &sched,
+    DailySchedule &sched,  
     size_t dailyNeed,
     size_t maxShifts,
     long unsigned int currentDay,
@@ -159,7 +160,7 @@ bool isValid(
             std::cout << "Parsing Worker with ID: " << workerId << std::endl;
             if (avail[day][workerId] == 1)
             {
-                if (potentialShifts[workerId] + shifts[workerId] < maxShifts && sched[day][workerId] == 0)
+                if (potentialShifts[workerId] + shifts[workerId] < maxShifts && sched[day][workerId] == INVALID_ID)
                 {
                     std::cout << workerId << " is available on day " << day << std::endl;
                     workersAvailableToday++;
